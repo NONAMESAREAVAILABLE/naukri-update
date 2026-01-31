@@ -4,6 +4,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import com.naukrimanage.pages.ProfilePage;
+import com.naukrimanage.pages.UserHomePage;
+import com.naukrimanage.utils.CVManager;
 import com.naukrimanage.utils.Configurations;
 
 import java.io.File;
@@ -50,6 +53,15 @@ public class ControlPanel {
         return driver;
     }
 
+    public void updateCV()
+    {
+        UserHomePage userHome = new UserHomePage(driver, 20);
+        userHome.openUserProfile();
+        ProfilePage profile = new ProfilePage(driver, 20);
+        CVManager cv = new CVManager();
+        String cvFilePath = cv.downloadCV();
+        profile.updateCV(cvFilePath);
+    }
 
 
     public void openBrowser(String url) {

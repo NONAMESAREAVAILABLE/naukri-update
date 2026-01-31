@@ -28,12 +28,8 @@ public class App {
         driver = controls.getDriver();
         HomePage home = new HomePage(driver, 20);
         home.login();
-        UserHomePage userHome = new UserHomePage(driver, 20);
-        userHome.openUserProfile();
-        ProfilePage profile = new ProfilePage(driver, 20);
-
-        String cvFilePath = CVManager.downloadCV();
-        profile.updateCV(cvFilePath);
+        
+        controls.updateCV();
 
         controls.closeSession();
     }

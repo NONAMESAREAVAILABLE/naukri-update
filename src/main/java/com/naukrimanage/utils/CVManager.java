@@ -8,22 +8,42 @@ import java.net.URL;
 
 public class CVManager {
 
-    private static String outputFile = System.getProperty("user.dir")+File.separator+"CV"+File.separator+"resume.docx";   //"D:\\downloads\\resume.docx";
+    private String outputFile = System.getProperty("user.dir")+File.separator+"CV"+File.separator+"resume";   //"D:\\downloads\\resume.docx";
 
-    public static String downloadCV() {
+    public String downloadCV() {
+
+        String extension = ".bin";
+        String fileUrl = Configurations.properties.getProperty("ResumeDownloadUrl");
+        System.out.println("The url form which CV is going to be downlaoded is: "+fileUrl);
+
         try {
-            String fileUrl = Configurations.properties.getProperty("ResumeDownloadUrl");
-            System.out.println("The url form which CV is going to be downlaoded is: "+fileUrl);
+            
+            URL url = new URL(fileUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+            
+            if (conn.getResponseCode() != 200) {
+                throw new RuntimeException("HTTP error: " + conn.getResponseCode());
+            }
+            String contentType = conn.getContentType();
+            if (contentType != null) {
+                contentType = contentType.split(";")[0].trim();
+            }
+
+            if (contentType.equals("application/pdf")) {
+                extension = ".pdf";
+            } else if (contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+                extension = ".docx";
+            }
+
+            outputFile = outputFile+extension;
             File CVFile = new File(outputFile);
 
             File parentDir = CVFile.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs(); // creates all missing dirs
             }
-
-            URL url = new URL(fileUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
 
             try (InputStream in = conn.getInputStream();
                  FileOutputStream out = new FileOutputStream(outputFile)) {
